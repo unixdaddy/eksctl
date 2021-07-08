@@ -1,0 +1,54 @@
+ 1011  more .aws/config
+ 1012  more .aws/credentials 
+ 1013  echo $KUBECONFIG
+ 1014  pwd
+ 1015  eksctl
+ 1016  eksctl create cluster --name test --region us-west-1 --nodegroup-name primary --dry-run
+ 1017  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run
+ 1018  eksctl
+ 1019  eksctl create -h
+ 1020  eksctl create cluster -h
+ 1021  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --instance-types t2.small --dry-run
+ 1022  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --instance-types t2.small --managed --dry-run
+ 1023  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --instance-types t2.small --managed true --dry-run
+ 1024  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --instance-types t2.small --managed --dry-run
+ 1025  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --manged --instance-types t2.small --dry-run
+ 1026  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --managed --instance-types t2.small --dry-run
+ 1027  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run
+ 1028  eksctl create cluster --manged --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run
+ 1029  eksctl create cluster --managed --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run
+ 1030  eksctl create cluster --managed --instance-types t2.small --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run
+ 1031  mkdir eks_cluster
+ 1032  cd eks_cluster/
+ 1033  eksctl create cluster --managed --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run > cluster-1.20.yaaml
+ 1034  mv cluster-1.20.yaaml cluster-1.20.yaml 
+ 1035  more cluster-1.20.yaml 
+ 1036  eksctl create cluster --config-file cluster-1.20.yaml 
+ 1037  eksctl get cluster --region us-east-1
+ 1038  eksctl get cluster --region us-west-1
+ 1039  kubectl get nodes
+ 1040  kubectl get nodes -o wide
+ 1041  kubectl get pods -n kube-system 
+ 1042  kubectl-aws run testpod --image=nginx
+ 1043  kubectl get pods
+ 1044  kubectl log testpod
+ 1045  kubectl logs testpod
+ 1046  kubectl get svc
+ 1047  eksctl get cluster --region us-west-1 -h
+ 1048  eksctl get cluster -A
+ 1049  eksctl get -h
+ 1050  eksctl get iamserviceaccount
+ 1051  eksctl get iamserviceaccount --cluster test
+ 1052  eksctl get iamserviceaccount --cluster test --region us-west-1
+ 1053  eksctl
+ 1054  eksctl info 
+ 1055  eksctl utils
+ 1056  eksctl
+ 1057  eksctl generate
+ 1058  eksctl generate profile
+ 1059  history > tasks.txt
+eksctl utils describe-addon-versions --cluster test --region us-west-1
+eksctl utils describe-stacks --cluster test --region us-west-1
+kubectl run testpod --image=nginx
+kubectl expose pod testpod --port=80 --type=LoadBalancer
+eksctl delete cluster --name=test --region=us-west-1
