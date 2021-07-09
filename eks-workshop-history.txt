@@ -1,0 +1,481 @@
+dazmac:~/environment $ history
+    1  uname -a
+    2  lspv
+    3  pvs
+    4  sudo pvs
+    5  df -h
+    6  sudo curl --silent --location -o /usr/local/bin/kubectl    https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+    7  sudo chmod +x /usr/local/bin/kubectl
+    8  kubectl version --client
+    9  sudo pip install --upgrade awscli && hash -r
+   10  hash -r
+   11  sudo yum -y install jq gettext bash-completion moreutils
+   12  echo 'yq() {
+  docker run --rm -i -v "${PWD}":/workdir mikefarah/yq "$@"
+}' | tee -a ~/.bashrc && source ~/.bashrc
+   13  alias
+   14  for command in kubectl jq envsubst aws;   do     which $command &>/dev/null && echo "$command in path" || echo "$command NOT FOUND";   done
+   15  kubectl completion bash >>  ~/.bash_completion
+   16  . /etc/profile.d/bash_completion.sh
+   17  . ~/.bash_completion
+   18  echo 'export LBC_VERSION="v2.2.0"' >>  ~/.bash_profile
+   19  .  ~/.bash_profile
+   20  ls ../.aws/
+   21  rm -vf ${HOME}/.aws/credentials
+   22  aws sts get-caller-identity --output text --query Account
+   23  curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region'
+   24  aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --output text --region eu-west-2
+   25  export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
+   26  export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
+   27  export AZS=($(aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --output text --region $AWS_REGION))
+   28  test -n "$AWS_REGION" && echo AWS_REGION is "$AWS_REGION" || echo AWS_REGION is not set
+   29  echo "export ACCOUNT_ID=${ACCOUNT_ID}" | tee -a ~/.bash_profile
+   30  echo "export AWS_REGION=${AWS_REGION}" | tee -a ~/.bash_profile
+   31  echo "export AZS=(${AZS[@]})" | tee -a ~/.bash_profile
+   32  aws configure set default.region ${AWS_REGION}
+   33  aws configure get default.region
+   34  aws sts get-caller-identity --query Arn | grep eksworkshop-admin -q && echo "IAM role valid" || echo "IAM role NOT valid"
+   35  aws sts get-caller-identity --query Arn
+   36  cd ~/environment
+   37  git clone https://github.com/brentley/ecsdemo-frontend.git
+   38  git clone https://github.com/brentley/ecsdemo-nodejs.git
+   39  git clone https://github.com/brentley/ecsdemo-crystal.git
+   40  aws kms create-alias --alias-name alias/eksworkshop --target-key-id $(aws kms create-key --query KeyMetadata.Arn --output text)
+   41  export MASTER_ARN=$(aws kms describe-key --key-id alias/eksworkshop --query KeyMetadata.Arn --output text)
+   42  aws kms describe-key --key-id alias/eksworkshop --query KeyMetadata.Arn --output text
+   43  echo "export MASTER_ARN=${MASTER_ARN}" | tee -a ~/.bash_profile
+   44  more ~/.bash_profile 
+   45  curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+   46  sudo mv -v /tmp/eksctl /usr/local/bin
+   47  eksctl version
+   48  eksctl completion bash >> ~/.bash_completion
+   49  . /etc/profile.d/bash_completion.sh
+   50  . ~/.bash_completion
+   51  aws sts get-caller-identity --query Arn | grep eksworkshop-admin -q && echo "IAM role valid" || echo "IAM role NOT valid"
+   52  cat << EOF > eksworkshop.yaml
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: eksworkshop-eksctl
+  region: ${AWS_REGION}
+  version: "1.19"
+
+availabilityZones: ["${AZS[0]}", "${AZS[1]}", "${AZS[2]}"]
+
+managedNodeGroups:
+- name: nodegroup
+  desiredCapacity: 3
+  instanceType: t3.small
+  ssh:
+    enableSsm: true
+
+
+secretsEncryption:
+  keyARN: ${MASTER_ARN}
+EOF
+
+   53  ls
+   54  more eksworkshop.yaml 
+   55  eksctl create cluster -f eksworkshop.yaml
+   56  kubectl get nodes # if we see our 3 nodes, we know we have authenticated correctly
+   57  kubectl get pods -n kube-system 
+   58  kubectl get cm -n kube-system 
+   59  kubectl describe cm -n kube-system aws-auth 
+   60  aws cloud9 describe-environment-memberships --environment-id=$C9_PID | jq -r '.memberships[].userArn'
+   61  c9builder=$(aws cloud9 describe-environment-memberships --environment-id=$C9_PID | jq -r '.memberships[].userArn')
+   62  aws cloud9 describe-environment-memberships
+   63  env | grep C(
+   64  env | grep C9
+   65  aws cloud9 describe-environment-memberships --environment-id=$C9_PID
+   66  echo ${c9builder} | grep -q user
+   67  echo ${c9builder} | grep  user
+   68  if echo ${c9builder} | grep -q user; then rolearn=${c9builder};         echo Role ARN: ${rolearn}; elif echo ${c9builder} | grep -q assumed-role; then         assumedrolename=$(echo ${c9builder} | awk -F/ '{print $(NF-1)}');         rolearn=$(aws iam get-role --role-name ${assumedrolename} --query Role.Arn --output text) ;         echo Role ARN: ${rolearn}; fi
+   69  eksctl create iamidentitymapping --cluster eksworkshop-eksctl --arn ${rolearn} --group system:masters --username admin
+   70  kubectl describe cm -n kube-system aws-auth 
+   71  export DASHBOARD_VERSION="v2.0.0"
+   72  kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/${DASHBOARD_VERSION}/aio/deploy/recommended.yaml
+   73  kubectl get ns
+   74  kubectl get all -n kubernetes-dashboard 
+   75  kubectl proxy --port=8080 --address=0.0.0.0 --disable-filter=true &
+   76  jobs
+   77  aws eks get-token --cluster-name eksworkshop-eksctl | jq -r '.status.token'
+   78  aws eks get-token --cluster-name eksworkshop-eksctl
+   79  kubectl get secrets -n kubernetes-dashboard 
+   80  kubectl describe secrets -n kubernetes-dashboard kubernetes-dashboard-srwms
+   81  kubectl describe secrets -n kubernetes-dashboard kubernetes-dashboard-token-srwms 
+   82  kubectl describe secrets -n kubernetes-dashboard kubernetes-dashboard-token-srwms -o jsonpath='{.data.token}'
+   83  kubectl get secrets -n kubernetes-dashboard kubernetes-dashboard-token-srwms -o jsonpath='{.data.token}'
+   84  kubectl get secrets -n kubernetes-dashboard kubernetes-dashboard-token-srwms -o jsonpath='{.data.token}' | base64 -d
+   85  aws eks get-token --cluster-name eksworkshop-eksctl
+   86  aws eks get-token --cluster-name eksworkshop-eksctl | jq -r '.status.token'
+   87  # kill proxy
+   88  pkill -f 'kubectl proxy --port=8080'
+   89  # delete dashboard
+   90  kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/${DASHBOARD_VERSION}/aio/deploy/recommended.yaml
+   91  unset DASHBOARD_VERSION
+   92  cd ecsdemo-nodejs/
+   93  ls
+   94  more kubernetes/deployment.yaml 
+   95  kubectl apply -f kubernetes/deployment.yaml 
+   96  kubectl get all
+   97  kubectl apply -f kubernetes/service.yaml 
+   98  more kubernetes/service.yaml 
+   99  kubectl get all
+  100  cd ..
+  101  ls
+  102  cd ecsdemo-crystal/
+  103  ls
+  104  more kubernetes/deployment.yaml 
+  105  kubectl apply -f kubernetes/deployment.yaml 
+  106  more kubernetes/service.yaml 
+  107  kubectl apply -f kubernetes/service.yaml 
+  108  kubectl get all
+  109  pwd
+  110  cd ..
+  111  ls
+  112  kubectl describe svc ecsdemo-nodejs 
+  113  kubectl describe svc ecsdemo-crystal 
+  114  aws iam get-role --role-name "AWSServiceRoleForElasticLoadBalancing"
+  115  aws iam get-role --role-name "AWSServiceRoleForElasticLoadBalancing" || aws iam create-service-linked-role --aws-service-name "elasticloadbalancing.amazonaws.com"
+  116  cd ecsdemo-frontend/
+  117  ls
+  118  ls kubernetes/
+  119  more kubernetes/deployment.yaml 
+  120  more kubernetes/service.yaml 
+  121  more kubernetes/ingress.yaml 
+  122  kubectl apply -f kubernetes/deployment.yaml 
+  123  kubectl apply -f kubernetes/service.yaml 
+  124  kubectl get deployments.apps ecsdemo-frontend 
+  125  kubectl get deployments.apps ecsdemo-frontend -o wide
+  126  kubectl get deployments.apps ecsdemo-frontend -o jsonpath='{.status.loadBalancer.ingress[].hostname}'
+  127  kubectl get deployments.apps ecsdemo-frontend -o jsonpath='{.status.loadBalancer.ingress[*].hostname}'
+  128  kubectl get deployments.apps ecsdemo-frontend -o json
+  129  kubectl describe svc ecsdemo-frontend 
+  130  kubectl get deployments.apps ecsdemo-frontend -o json
+  131  kubectl get service ecsdemo-frontend -o json | jq -r '.status.loadBalancer.ingress[].hostname'
+  132  kubectl get service ecsdemo-frontend -o json | jq -r '.status.loadBalancer'
+  133  kubectl get service ecsdemo-frontend -o json | jq -r '.status'
+  134  kubectl get service ecsdemo-frontend -o json
+  135  kubectl get svc ecsdemo-frontend -o jsonpath='{.status.loadBalancer.ingress[].hostname}'
+  136  ELB=$(kubectl get service ecsdemo-frontend -o json | jq -r '.status.loadBalancer.ingress[].hostname')
+  137  curl -m3 -v $ELB
+  138  kubectl get svc ecsdemo-frontend -o jsonpath='{.status.loadBalancer.ingress[].hostname}'
+  139  kubectl get service ecsdemo-frontend -o json | jq -r '.status'
+  140  kubectl get service ecsdemo-frontend -o json | jq -r '.status.loadBalancer.ingress[].hostname'
+  141  kubectl get deployments
+  142  kubectl scale deployment ecsdemo-nodejs --replicas=3
+  143  kubectl scale deployment ecsdemo-crystal --replicas=3
+  144  kubectl get deployments
+  145  kubectl scale deployment ecsdemo-frontend --replicas=3
+  146  cd ~/environment/ecsdemo-frontend
+  147  kubectl delete -f kubernetes/service.yaml
+  148  kubectl delete -f kubernetes/deployment.yaml
+  149  cd ~/environment/ecsdemo-crystal
+  150  kubectl delete -f kubernetes/service.yaml
+  151  kubectl delete -f kubernetes/deployment.yaml
+  152  cd ~/environment/ecsdemo-nodejs
+  153  kubectl delete -f kubernetes/service.yaml
+  154  kubectl delete -f kubernetes/deployment.yaml
+  155  kubectl get ns
+  156  cd 
+  157  pwd
+  158  ls
+  159  curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+  160  helm version --short
+  161  helm repo add stable https://charts.helm.sh/stable
+  162  helm repo list
+  163  helm search repo stable
+  164  helm completion bash >> ~/.bash_completion
+  165  . /etc/profile.d/bash_completion.sh
+  166  . ~/.bash_completion
+  167  source <(helm completion bash)
+  168  # first, add the default repository, then update
+  169  helm repo add stable https://charts.helm.sh/stable
+  170  helm repo update
+  171  helm search repo
+  172  helm search repo nginx
+  173  helm repo add bitnami https://charts.bitnami.com/bitnami
+  174  helm repo list
+  175  helm search repo bitnami
+  176  helm search repo nginx
+  177  helm search repo bitnami/nginx
+  178  helm install --help
+  179  helm install --set --help
+  180  helm install mywebserver bitnami/nginx
+  181  kubectl get svc,po,deploy
+  182  kubectl describe deployment mywebserver-nginx 
+  183  kubectl get all
+  184  kubectl get pods -l app.kubernetes.io/name=nginx
+  185  kubectl get service mywebserver-nginx -o wide
+  186  helm list
+  187  helm uninstall mywebserver 
+  188  kubectl get pods -l app.kubernetes.io/name=nginx
+  189  kubectl get service mywebserver-nginx -o wide
+  190  cd ~/environment/
+  191  ls
+  192  helm create eksdemo
+  193  ls
+  194  ls eksdemo/
+  195  tree eksdemo
+  196  apt install tree
+  197  yum install tree
+  198  sudo yum install tree
+  199  tree eksdemo
+  200  rm -rf ~/environment/eksdemo/templates/
+  201  rm ~/environment/eksdemo/Chart.yaml
+  202  rm ~/environment/eksdemo/values.yaml
+  203  tree eksdemo
+  204  cat <<EoF > ~/environment/eksdemo/Chart.yaml
+apiVersion: v2
+name: eksdemo
+description: A Helm chart for EKS Workshop Microservices application
+version: 0.1.0
+appVersion: 1.0
+EoF
+
+  205  tree eksdemo
+  206  more eksdemo/Chart.yaml 
+  207  #create subfolders for each template type
+  208  mkdir -p ~/environment/eksdemo/templates/deployment
+  209  mkdir -p ~/environment/eksdemo/templates/service
+  210  # Copy and rename frontend manifests
+  211  cp ~/environment/ecsdemo-frontend/kubernetes/deployment.yaml ~/environment/eksdemo/templates/deployment/frontend.yaml
+  212  cp ~/environment/ecsdemo-frontend/kubernetes/service.yaml ~/environment/eksdemo/templates/service/frontend.yaml
+  213  # Copy and rename crystal manifests
+  214  cp ~/environment/ecsdemo-crystal/kubernetes/deployment.yaml ~/environment/eksdemo/templates/deployment/crystal.yaml
+  215  cp ~/environment/ecsdemo-crystal/kubernetes/service.yaml ~/environment/eksdemo/templates/service/crystal.yaml
+  216  # Copy and rename nodejs manifests
+  217  cp ~/environment/ecsdemo-nodejs/kubernetes/deployment.yaml ~/environment/eksdemo/templates/deployment/nodejs.yaml
+  218  cp ~/environment/ecsdemo-nodejs/kubernetes/service.yaml ~/environment/eksdemo/templates/service/nodejs.yaml
+  219  tree eksdemo
+  220  cat <<EoF > ~/environment/eksdemo/values.yaml
+replicas: 3
+version: 'latest'
+
+nodejs:
+  image: brentley/ecsdemo-nodejs
+crystal:
+  image: brentley/ecsdemo-crystal
+frontend:
+  image: brentley/ecsdemo-frontend
+EoF
+
+  221  tree eksdemo
+  222  helm install --debug --dry-run workshop ~/environment/eksdemo
+  223  helm install workshop ~/environment/eksdemo
+  224  kubectl get all
+  225  kubectl get svc ecsdemo-frontend -o jsonpath="{.status.loadBalancer.ingress[*].hostname}"; echo
+  226  kubectl get all
+  227  kubectl describe service ecsdemo-frontend 
+  228  helm upgrade workshop ~/environment/eksdemo
+  229  kubectl get pods
+  230  helm status workshop
+  231  helm history workshop
+  232  helm rollback workshop 1
+  233  helm history workshop
+  234  helm status workshop
+  235  kubectl get pods
+  236  helm uninstall workshop
+  237  kubectl get all
+  238  mkdir -p ~/environment/healthchecks
+  239  cat <<EoF > ~/environment/healthchecks/liveness-app.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness-app
+spec:
+  containers:
+  - name: liveness
+    image: brentley/ecsdemo-nodejs
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 3000
+      initialDelaySeconds: 5
+      periodSeconds: 5
+EoF
+
+  240  tree healthchecks/
+  241  more healthchecks/liveness-app.yaml 
+  242  kubectl apply -f healthchecks/liveness-app.yaml 
+  243  kubectl get pods
+  244  kubectl describe pod liveness-app 
+  245  kubectl exec -it liveness-app -- /bin/kill -s SIGUSR1 1
+  246  kubectl describe pod liveness-app 
+  247  kubectl get pods
+  248  kubectl describe pod liveness-app 
+  249  kubectl get events
+  250  kubectl logs liveness-app 
+  251  kubectl logs liveness-app --previous
+  252  cat <<EoF > ~/environment/healthchecks/readiness-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: readiness-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: readiness-deployment
+  template:
+    metadata:
+      labels:
+        app: readiness-deployment
+    spec:
+      containers:
+      - name: readiness-deployment
+        image: alpine
+        command: ["sh", "-c", "touch /tmp/healthy && sleep 86400"]
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+          initialDelaySeconds: 5
+          periodSeconds: 3
+EoF
+
+  253  tree healthchecks/
+  254  kubectl apply -f ~/environment/healthchecks/readiness-deployment.yaml
+  255  kubectl get pods
+  256  kubectl describe deployment readiness-deployment | grep Replicas:
+  257  kubectl exec -it readiness-deployment-644f56898d-blhpl -- rm /tmp/healthy
+  258  kubectl get pods
+  259  kubectl describe deployment readiness-deployment | grep Replicas:
+  260  kubectl exec -it readiness-deployment-644f56898d-blhpl -- touch /tmp/healthy
+  261  kubectl get pods
+  262  kubectl delete -f ~/environment/healthchecks/liveness-app.yaml
+  263  kubectl delete -f ~/environment/healthchecks/readiness-deployment.yaml
+  264  helm search
+  265  helm repo search
+  266  helm repo search list
+  267  helm repo list
+  268  helm search 
+  269  helm search  kube-ops-view
+  270  helm search repo  kube-ops-view
+  271  helm search repo  
+  272  helm install kube-ops-view stable/kube-ops-view --set service.type=LoadBalancer --set rbac.create=True
+  273  kubectl get svc
+  274  helm list
+  275  kubectl get svc kube-ops-view | tail -n 1 | awk '{ print "Kube-ops-view URL = http://"$4 }'
+  276  kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml
+  277  kubectl get apiservice v1beta1.metrics.k8s.io -o json | jq '.status'
+  278  kubectl create deployment php-apache --image=us.gcr.io/k8s-artifacts-prod/hpa-example
+  279  kubectl set resources deploy php-apache --requests=cpu=200m
+  280  kubectl expose deploy php-apache --port 80
+  281  kubectl get pod -l app=php-apache
+  282  kubectl describe deployments.apps php-apache 
+  283  kubectl get pod -l app=php-apache
+  284  kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=10
+  285  kubectl get hpa
+  286  kubectl get hpa -w
+  287  kubectl get pods
+  288  aws autoscaling     describe-auto-scaling-groups     --query "AutoScalingGroups[? Tags[? (Key=='eks:cluster-name') && Value=='eksworkshop-eksctl']].[AutoScalingGroupName, MinSize, MaxSize,DesiredCapacity]"     --output table
+  289  aws autoscaling describe-auto-scaling-groups --query "AutoScalingGroups[? Tags[? (Key=='eks:cluster-name') && Value=='eksworkshop-eksctl']].AutoScalingGroupName" --output text
+  290  # we need the ASG name
+  291  export ASG_NAME=$(aws autoscaling describe-auto-scaling-groups --query "AutoScalingGroups[? Tags[? (Key=='eks:cluster-name') && Value=='eksworkshop-eksctl']].AutoScalingGroupName" --output text)
+  292  # increase max capacity up to 4
+  293  aws autoscaling     update-auto-scaling-group     --auto-scaling-group-name ${ASG_NAME}     --min-size 3     --desired-capacity 3     --max-size 4
+  294  # Check new values
+  295  aws autoscaling     describe-auto-scaling-groups     --query "AutoScalingGroups[? Tags[? (Key=='eks:cluster-name') && Value=='eksworkshop-eksctl']].[AutoScalingGroupName, MinSize, MaxSize,DesiredCapacity]"     --output table
+  296  eksctl utils associate-iam-oidc-provider     --cluster eksworkshop-eksctl     --approve
+  297  mkdir ~/environment/cluster-autoscaler
+  298  cat <<EoF > ~/environment/cluster-autoscaler/k8s-asg-policy.json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:DescribeTags",
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:TerminateInstanceInAutoScalingGroup",
+                "ec2:DescribeLaunchTemplateVersions"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        }
+    ]
+}
+EoF
+
+  299  aws iam create-policy     --policy-name k8s-asg-policy   --policy-document file://~/environment/cluster-autoscaler/k8s-asg-policy.json
+  300  kubectl get sa -n kube-system 
+  301  eksctl create iamserviceaccount     --name cluster-autoscaler     --namespace kube-system     --cluster eksworkshop-eksctl     --attach-policy-arn "arn:aws:iam::${ACCOUNT_ID}:policy/k8s-asg-policy"     --approve     --override-existing-serviceaccounts
+  302  kubectl get sa -n kube-system 
+  303  kubectl -n kube-system describe sa cluster-autoscaler
+  304  kubectl apply -f https://www.eksworkshop.com/beginner/080_scaling/deploy_ca.files/cluster-autoscaler-autodiscover.yaml
+  305  wget https://www.eksworkshop.com/beginner/080_scaling/deploy_ca.files/cluster-autoscaler-autodiscover.yaml
+  306  more cluster-autoscaler-autodiscover.yaml 
+  307  kubectl -n kube-system     annotate deployment.apps/cluster-autoscaler     cluster-autoscaler.kubernetes.io/safe-to-evict="false"
+  308  kubectl get deployments.apps -n kube-system cluster-autoscaler | grep -i anno -A 4
+  309  kubectl get deployments.apps -n kube-system cluster-autoscaler | grep -i an -A 4
+  310  kubectl describe deployments.apps -n kube-system cluster-autoscaler | grep -i an -A 4
+  311  kubectl describe deployments.apps -n kube-system cluster-autoscaler | grep -i annotations -A 5
+  312  kubectl describe deployments.apps -n kube-system cluster-autoscaler | grep -i image
+  313  # we need to retrieve the latest docker image available for our EKS version
+  314  export K8S_VERSION=$(kubectl version --short | grep 'Server Version:' | sed 's/[^0-9.]*\([0-9.]*\).*/\1/' | cut -d. -f1,2)
+  315  export AUTOSCALER_VERSION=$(curl -s "https://api.github.com/repos/kubernetes/autoscaler/releases" | grep '"tag_name":' | sed -s 's/.*-\([0-9][0-9\.]*\).*/\1/' | grep -m1 ${K8S_VERSION})
+  316  kubectl -n kube-system     set image deployment.apps/cluster-autoscaler     cluster-autoscaler=us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler:v${AUTOSCALER_VERSION}
+  317  kubectl describe deployments.apps -n kube-system cluster-autoscaler | grep -i image
+  318  kubectl -n kube-system logs -f deployment/cluster-autoscaler
+  319  aws autoscaling     describe-auto-scaling-groups     --query "AutoScalingGroups[? Tags[? (Key=='eks:cluster-name') && Value=='eksworkshop-eksctl']].[AutoScalingGroupName, MinSize, MaxSize,DesiredCapacity]"     --output table
+  320  cat <<EoF> ~/environment/cluster-autoscaler/nginx.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-to-scaleout
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        service: nginx
+        app: nginx
+    spec:
+      containers:
+      - image: nginx
+        name: nginx-to-scaleout
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+EoF
+
+  321  kubectl apply -f ~/environment/cluster-autoscaler/nginx.yaml
+  322  kubectl get deployment/nginx-to-scaleout
+  323  kubectl scale --replicas=10 deployment/nginx-to-scaleout
+  324  kubectl get pods -l app=nginx -o wide --watch
+  325  kubectl -n kube-system logs -f deployment/cluster-autoscaler
+  326  kubectl delete -f ~/environment/cluster-autoscaler/nginx.yaml
+  327  kubectl delete -f https://www.eksworkshop.com/beginner/080_scaling/deploy_ca.files/cluster-autoscaler-autodiscover.yaml
+  328  eksctl delete iamserviceaccount   --name cluster-autoscaler   --namespace kube-system   --cluster eksworkshop-eksctl   --wait
+  329  aws iam delete-policy   --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/k8s-asg-policy
+  330  export ASG_NAME=$(aws autoscaling describe-auto-scaling-groups --query "AutoScalingGroups[? Tags[? (Key=='eks:cluster-name') && Value=='eksworkshop-eksctl']].AutoScalingGroupName" --output text)
+  331  aws autoscaling   update-auto-scaling-group   --auto-scaling-group-name ${ASG_NAME}   --min-size 3   --desired-capacity 3   --max-size 3
+  332  kubectl delete hpa,svc php-apache
+  333  kubectl delete deployment php-apache
+  334  kubectl delete pod load-generator
+  335  cd ~/environment
+  336  rm -rf ~/environment/cluster-autoscaler
+  337  kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml
+  338  kubectl delete ns metrics
+  339  helm uninstall kube-ops-view
+  340  unset ASG_NAME
+  341  unset AUTOSCALER_VERSION
+  342  unset K8S_VERSION
+  343  eksctl cluster delete
+  344  eksctl 
+  345  eksctl get cluster --region=eu-west-2
+  346  eksctl delete cluster --region=eu-west-2 --name=eksworkshop-eksctl
+  347  history

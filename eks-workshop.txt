@@ -1,0 +1,143 @@
+dazmac:~/environment $ kubectl delete -f ~/environment/cluster-autoscaler/nginx.yaml
+deployment.apps "nginx-to-scaleout" deleted
+dazmac:~/environment $ 
+dazmac:~/environment $ kubectl delete -f https://www.eksworkshop.com/beginner/080_scaling/deploy_ca.files/cluster-autoscaler-autodiscover.yaml
+clusterrole.rbac.authorization.k8s.io "cluster-autoscaler" deleted
+role.rbac.authorization.k8s.io "cluster-autoscaler" deleted
+clusterrolebinding.rbac.authorization.k8s.io "cluster-autoscaler" deleted
+rolebinding.rbac.authorization.k8s.io "cluster-autoscaler" deleted
+deployment.apps "cluster-autoscaler" deleted
+dazmac:~/environment $ 
+dazmac:~/environment $ eksctl delete iamserviceaccount \
+>   --name cluster-autoscaler \
+>   --namespace kube-system \
+>   --cluster eksworkshop-eksctl \
+>   --wait
+2021-07-09 16:58:59 [ℹ]  eksctl version 0.56.0
+2021-07-09 16:58:59 [ℹ]  using region eu-west-2
+2021-07-09 16:58:59 [ℹ]  1 iamserviceaccount (kube-system/cluster-autoscaler) was included (based on the include/exclude rules)
+2021-07-09 16:59:00 [ℹ]  1 task: { 2 sequential sub-tasks: { delete IAM role for serviceaccount "kube-system/cluster-autoscaler", delete serviceaccount "kube-system/cluster-autoscaler" } }
+2021-07-09 16:59:00 [ℹ]  will delete stack "eksctl-eksworkshop-eksctl-addon-iamserviceaccount-kube-system-cluster-autoscaler"
+2021-07-09 16:59:00 [ℹ]  waiting for stack "eksctl-eksworkshop-eksctl-addon-iamserviceaccount-kube-system-cluster-autoscaler" to get deleted
+2021-07-09 16:59:00 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-addon-iamserviceaccount-kube-system-cluster-autoscaler"
+2021-07-09 16:59:16 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-addon-iamserviceaccount-kube-system-cluster-autoscaler"
+2021-07-09 16:59:17 [ℹ]  deleted serviceaccount "kube-system/cluster-autoscaler"
+dazmac:~/environment $ 
+dazmac:~/environment $ aws iam delete-policy \
+>   --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/k8s-asg-policy
+dazmac:~/environment $ 
+dazmac:~/environment $ export ASG_NAME=$(aws autoscaling describe-auto-scaling-groups --query "AutoScalingGroups[? Tags[? (Key=='eks:cluster-name') && Value=='eksworkshop-eksctl']].AutoScalingGroupName" --output text)
+dazmac:~/environment $ 
+dazmac:~/environment $ aws autoscaling \
+>   update-auto-scaling-group \
+>   --auto-scaling-group-name ${ASG_NAME} \
+>   --min-size 3 \
+>   --desired-capacity 3 \
+>   --max-size 3
+dazmac:~/environment $ 
+dazmac:~/environment $ kubectl delete hpa,svc php-apache
+horizontalpodautoscaler.autoscaling "php-apache" deleted
+service "php-apache" deleted
+dazmac:~/environment $ 
+dazmac:~/environment $ kubectl delete deployment php-apache
+deployment.apps "php-apache" deleted
+dazmac:~/environment $ 
+dazmac:~/environment $ kubectl delete pod load-generator
+pod "load-generator" deleted
+dazmac:~/environment $ 
+dazmac:~/environment $ cd ~/environment
+dazmac:~/environment $ 
+dazmac:~/environment $ rm -rf ~/environment/cluster-autoscaler
+dazmac:~/environment $ 
+dazmac:~/environment $ kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml
+serviceaccount "metrics-server" deleted
+clusterrole.rbac.authorization.k8s.io "system:aggregated-metrics-reader" deleted
+clusterrole.rbac.authorization.k8s.io "system:metrics-server" deleted
+rolebinding.rbac.authorization.k8s.io "metrics-server-auth-reader" deleted
+clusterrolebinding.rbac.authorization.k8s.io "metrics-server:system:auth-delegator" deleted
+clusterrolebinding.rbac.authorization.k8s.io "system:metrics-server" deleted
+service "metrics-server" deleted
+deployment.apps "metrics-server" deleted
+apiservice.apiregistration.k8s.io "v1beta1.metrics.k8s.io" deleted
+dazmac:~/environment $ 
+dazmac:~/environment $ kubectl delete ns metrics
+Error from server (NotFound): namespaces "metrics" not found
+dazmac:~/environment $ 
+dazmac:~/environment $ helm uninstall kube-ops-view
+W0709 17:00:07.081758   21069 warnings.go:70] rbac.authorization.k8s.io/v1beta1 ClusterRoleBinding is deprecated in v1.17+, unavailable in v1.22+; use rbac.authorization.k8s.io/v1 ClusterRoleBinding
+W0709 17:00:07.107599   21069 warnings.go:70] rbac.authorization.k8s.io/v1beta1 ClusterRole is deprecated in v1.17+, unavailable in v1.22+; use rbac.authorization.k8s.io/v1 ClusterRole
+release "kube-ops-view" uninstalled
+dazmac:~/environment $ 
+dazmac:~/environment $ unset ASG_NAME
+dazmac:~/environment $ unset AUTOSCALER_VERSION
+dazmac:~/environment $ unset K8S_VERSION
+dazmac:~/environment $ eksctl cluster delete
+Error: unknown command "cluster" for "eksctl"
+Run 'eksctl --help' for usage.
+dazmac:~/environment $ eksctl 
+The official CLI for Amazon EKS
+
+Usage: eksctl [command] [flags]
+
+Commands:
+  eksctl associate                       Associate resources with a cluster
+  eksctl completion                      Generates shell completion scripts for bash, zsh or fish
+  eksctl create                          Create resource(s)
+  eksctl delete                          Delete resource(s)
+  eksctl disassociate                    Disassociate resources from a cluster
+  eksctl drain                           Drain resource(s)
+  eksctl enable                          Enable features in a cluster
+  eksctl generate                        Generate gitops manifests
+  eksctl get                             Get resource(s)
+  eksctl help                            Help about any command
+  eksctl info                            Output the version of eksctl, kubectl and OS info
+  eksctl scale                           Scale resources(s)
+  eksctl set                             Set values
+  eksctl unset                           Unset values
+  eksctl update                          Update resource(s)
+  eksctl upgrade                         Upgrade resource(s)
+  eksctl utils                           Various utils
+  eksctl version                         Output the version of eksctl
+
+Common flags:
+  -C, --color string   toggle colorized logs (valid options: true, false, fabulous) (default "true")
+  -h, --help           help for this command
+  -v, --verbose int    set log level, use 0 to silence, 4 for debugging and 5 for debugging with AWS debug logging (default 3)
+
+Use 'eksctl [command] --help' for more information about a command.
+
+dazmac:~/environment $ eksctl get cluster --region=eu-west-2
+2021-07-09 17:04:23 [ℹ]  eksctl version 0.56.0
+2021-07-09 17:04:23 [ℹ]  using region eu-west-2
+NAME                    REGION          EKSCTL CREATED
+eksworkshop-eksctl      eu-west-2       True
+dazmac:~/environment $ eksctl delete cluster --region=eu-west-2 --name=eksworkshop-eksctl                                                          
+2021-07-09 17:05:01 [ℹ]  eksctl version 0.56.0
+2021-07-09 17:05:01 [ℹ]  using region eu-west-2
+2021-07-09 17:05:01 [ℹ]  deleting EKS cluster "eksworkshop-eksctl"
+2021-07-09 17:05:01 [ℹ]  deleted 0 Fargate profile(s)
+2021-07-09 17:05:02 [✔]  kubeconfig has been updated
+2021-07-09 17:05:02 [ℹ]  cleaning up AWS load balancers created by Kubernetes objects of Kind Service or Ingress
+2021-07-09 17:05:05 [ℹ]  3 sequential tasks: { delete nodegroup "nodegroup", delete IAM OIDC provider, delete cluster control plane "eksworkshop-eksctl" [async] }
+2021-07-09 17:05:05 [ℹ]  will delete stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:05:05 [ℹ]  waiting for stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup" to get deleted
+2021-07-09 17:05:05 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:05:22 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:05:38 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:05:58 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:06:15 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:06:35 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:06:54 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:07:13 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:07:30 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:07:47 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:08:04 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:08:20 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:08:39 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:08:55 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:09:11 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:09:28 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:09:44 [ℹ]  waiting for CloudFormation stack "eksctl-eksworkshop-eksctl-nodegroup-nodegroup"
+2021-07-09 17:09:45 [ℹ]  will delete stack "eksctl-eksworkshop-eksctl-cluster"
+2021-07-09 17:09:45 [✔]  all cluster resources were deleted
+dazmac:~/environment $ 
