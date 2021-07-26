@@ -8,15 +8,10 @@
  1017  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run
  1019  eksctl create -h
  1020  eksctl create cluster -h
- 1021  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --instance-types t2.small --dry-run
- 1022  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --instance-types t2.small --managed --dry-run
- 1023  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --instance-types t2.small --managed true --dry-run
- 1024  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --instance-types t2.small --managed --dry-run
- 1025  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --manged --instance-types t2.small --dry-run
- 1026  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --managed --instance-types t2.small --dry-run
+works - none managed
  1027  eksctl create cluster --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run
+works - managed
  1029  eksctl create cluster --managed --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run
- 1030  eksctl create cluster --managed --instance-types t2.small --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run
  1033  eksctl create cluster --managed --name test --region us-west-1 --version 1.20 --nodegroup-name primary --dry-run > cluster-1.20.yaml
  1035  more cluster-1.20.yaml 
  1036  eksctl create cluster --config-file cluster-1.20.yaml 
@@ -45,3 +40,18 @@ eksctl utils describe-stacks --cluster test --region us-west-1
 kubectl run testpod --image=nginx
 kubectl expose pod testpod --port=80 --type=LoadBalancer
 eksctl delete cluster --name=test --region=us-west-1
+
+tried to upgrade
+----------------
+Error: control plane version "1.21" is not known to this version of eksctl, try to upgrade eksctl first
+# curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+# sudo mv /tmp/eksctl /usr/local/bin
+# eksctl info
+eksctl version: 0.58.0
+kubectl version: v1.17.0-4-g38212b5
+OS: linux
+# eksctl upgrade cluster --name test --version 1.21   
+# eksctl upgrade cluster --name test --version 1.21 --approve
+# eksctl utils describe-addon-versions --cluster test-nodegroup
+# eksctl get addons --cluster test-nodegroup
+# eksctl create addon -f config.yaml

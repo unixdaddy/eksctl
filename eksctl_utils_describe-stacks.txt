@@ -1,0 +1,153 @@
+2021-07-14 15:24:52 [ℹ]  eksctl version 0.55.0
+2021-07-14 15:24:52 [ℹ]  using region eu-west-2
+2021-07-14 15:24:53 [ℹ]  stack/eksctl-test-nodegroup-ng-c197c2c0 = {
+  Capabilities: ["CAPABILITY_IAM"],
+  CreationTime: 2021-07-14 13:50:47.227 +0000 UTC,
+  Description: "EKS nodes (AMI family: AmazonLinux2, SSH access: false, private networking: false) [created and managed by eksctl]",
+  DisableRollback: false,
+  DriftInformation: {
+    StackDriftStatus: "NOT_CHECKED"
+  },
+  EnableTerminationProtection: false,
+  Outputs: [
+    {
+      OutputKey: "FeaturePrivateNetworking",
+      OutputValue: "false"
+    },
+    {
+      ExportName: "eksctl-test-nodegroup-ng-c197c2c0::InstanceRoleARN",
+      OutputKey: "InstanceRoleARN",
+      OutputValue: "arn:aws:iam::305125643676:role/eksctl-test-nodegroup-ng-c197c2c0-NodeInstanceRole-1HE7MWNG89T8G"
+    },
+    {
+      OutputKey: "FeatureLocalSecurityGroup",
+      OutputValue: "true"
+    },
+    {
+      ExportName: "eksctl-test-nodegroup-ng-c197c2c0::InstanceProfileARN",
+      OutputKey: "InstanceProfileARN",
+      OutputValue: "arn:aws:iam::305125643676:instance-profile/eksctl-test-nodegroup-ng-c197c2c0-NodeInstanceProfile-OCZCVV60W4CC"
+    },
+    {
+      OutputKey: "FeatureSharedSecurityGroup",
+      OutputValue: "true"
+    }
+  ],
+  RollbackConfiguration: {
+
+  },
+  StackId: "arn:aws:cloudformation:eu-west-2:305125643676:stack/eksctl-test-nodegroup-ng-c197c2c0/7dd70970-e4aa-11eb-8a89-0a5fed7588f4",
+  StackName: "eksctl-test-nodegroup-ng-c197c2c0",
+  StackStatus: "CREATE_COMPLETE",
+  Tags: [
+    {
+      Key: "alpha.eksctl.io/cluster-name",
+      Value: "test"
+    },
+    {
+      Key: "alpha.eksctl.io/nodegroup-name",
+      Value: "ng-c197c2c0"
+    },
+    {
+      Key: "eksctl.cluster.k8s.io/v1alpha1/cluster-name",
+      Value: "test"
+    },
+    {
+      Key: "alpha.eksctl.io/nodegroup-type",
+      Value: "unmanaged"
+    },
+    {
+      Key: "alpha.eksctl.io/eksctl-version",
+      Value: "0.55.0"
+    },
+    {
+      Key: "eksctl.io/v1alpha2/nodegroup-name",
+      Value: "ng-c197c2c0"
+    }
+  ]
+}
+2021-07-14 15:24:53 [ℹ]  stack/eksctl-test-cluster = {
+  Capabilities: ["CAPABILITY_IAM"],
+  CreationTime: 2021-07-14 13:34:42.33 +0000 UTC,
+  Description: "EKS cluster (dedicated VPC: true, dedicated IAM: true) [created and managed by eksctl]",
+  DisableRollback: false,
+  DriftInformation: {
+    StackDriftStatus: "NOT_CHECKED"
+  },
+  EnableTerminationProtection: false,
+  Outputs: [
+    {
+      ExportName: "eksctl-test-cluster::SubnetsPrivate",
+      OutputKey: "SubnetsPrivate",
+      OutputValue: "subnet-00a6bd31bb636c90a,subnet-0c22edd8904daa631,subnet-0c08f3e88212b8940"
+    },
+    {
+      ExportName: "eksctl-test-cluster::SubnetsPublic",
+      OutputKey: "SubnetsPublic",
+      OutputValue: "subnet-0ef31dc1e68ff4dce,subnet-0a91b0b9a7724ee5b,subnet-057e9f9f49fb373f0"
+    },
+    {
+      OutputKey: "FeatureNATMode",
+      OutputValue: "Single"
+    },
+    {
+      ExportName: "eksctl-test-cluster::ServiceRoleARN",
+      OutputKey: "ServiceRoleARN",
+      OutputValue: "arn:aws:iam::305125643676:role/eksctl-test-cluster-ServiceRole-1X09WUD6DA5TN"
+    },
+    {
+      ExportName: "eksctl-test-cluster::Endpoint",
+      OutputKey: "Endpoint",
+      OutputValue: "https://0A16901EF1B92E3E66025F3F5B06F048.gr7.eu-west-2.eks.amazonaws.com"
+    },
+    {
+      ExportName: "eksctl-test-cluster::SharedNodeSecurityGroup",
+      OutputKey: "SharedNodeSecurityGroup",
+      OutputValue: "sg-0abbe95b5bd81cfed"
+    },
+    {
+      ExportName: "eksctl-test-cluster::VPC",
+      OutputKey: "VPC",
+      OutputValue: "vpc-0566a9b66eb964745"
+    },
+    {
+      ExportName: "eksctl-test-cluster::ClusterSecurityGroupId",
+      OutputKey: "ClusterSecurityGroupId",
+      OutputValue: "sg-0e2efc604e4e0646d"
+    },
+    {
+      OutputKey: "ClusterStackName",
+      OutputValue: "eksctl-test-cluster"
+    },
+    {
+      OutputKey: "CertificateAuthorityData",
+      OutputValue: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJeE1EY3hOREV6TkRFeE1sb1hEVE14TURjeE1qRXpOREV4TWxvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTGcrCjduMzJMNkFzU3cwMmdFd1RMc0d6MjhpYTAySEh1WWFzYTQ4cU5wdEQrT2ZpMVovM0piK1h5WjByay9razhMSFAKWHNJWkRxQ2ZwZGlvcThZdzliUUhwRGhSbXl4d1dnTzhmWkVjTG56WXNTVEVBbmFVbmVHcHFaeGlKMVphb3AydQpoMW05RXFoa3Z5WWFrMVI1aFcyZXFYbE1FcElKWmF1Q2h1L0NUVEduNHRUb1BpdVFBNm1sM1JCcTJnMzNoS1NzCitiOW1xbXpla1pOS1hNc0NYZXpucHg1ZEFBZ3FBOWMrSmJ6RDU1S0RmbjhTVDZNSEgyMEo2MTNuZHZWTUZ6QS8KZDJwMjRkb1BuT1o4blN2V2xlRDI0MkN3WkZYTHZvZUJQUHl3WDVNQkhTQWFxNnBjYjNLcnZIdUdaVDNGUGR0dgptUk1qMXM3VUUraGZIbDc1QXVFQ0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZCNXdTcElWd3FSR2lsM0VTV255R0NSZndkUG9NQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCS1NybHVwTVpZcUNEbC9wbU1FWE9yb2E3WjdZeTBqZ1pEZzNEa3hKdEsvTS9OMWRRTApXc2UzM3JqVm1jNG94d3VmOStmSTAzMUFhMFBmZlRIOUNwa0VtdTVWOXVvRUh5TG1XcTBadGtFT0VWQ0czRExnCmN5Ym5ySlEwUStVaDUxQjNoZ3RqM1ZjMysrczdxRjFxUUtZalkwRGsyZ2cyR1FxcFhoN2h0blVtT0xBVGlPSlQKMDEwaDBxWXR5WC9TL2JWY212VDdPNEYvaVlIdnI3QUc5dForb0cyM21WU3ZYTmFrM1hocTZIYUVpQ1l4VjVwdAphUUZ6V2FxamNIUmNwTDBNTElmWnpZWVU1Mk1Nc29iTGk3QUtuMGgrNDhGUFEyb1BaTlZjYmtoMEFhSGJ4QTc2CnJVelhub2xLZ0I5ZWtmeFNqekRpc2ZFYk9ZbHlodVV1UDF2WgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=="
+    },
+    {
+      ExportName: "eksctl-test-cluster::SecurityGroup",
+      OutputKey: "SecurityGroup",
+      OutputValue: "sg-05a5e1ce8ce0d1bef"
+    },
+    {
+      ExportName: "eksctl-test-cluster::ARN",
+      OutputKey: "ARN",
+      OutputValue: "arn:aws:eks:eu-west-2:305125643676:cluster/test"
+    }
+  ],
+  RollbackConfiguration: {
+
+  },
+  StackId: "arn:aws:cloudformation:eu-west-2:305125643676:stack/eksctl-test-cluster/3eaf0bf0-e4a8-11eb-ad6f-0a71ffb2c2c4",
+  StackName: "eksctl-test-cluster",
+  StackStatus: "CREATE_COMPLETE",
+  Tags: [{
+      Key: "alpha.eksctl.io/cluster-name",
+      Value: "test"
+    },{
+      Key: "eksctl.cluster.k8s.io/v1alpha1/cluster-name",
+      Value: "test"
+    },{
+      Key: "alpha.eksctl.io/eksctl-version",
+      Value: "0.55.0"
+    }]
+}
